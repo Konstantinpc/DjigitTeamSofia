@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "426725368110",
+    "firebase_url": "https://djigitteamsofia.firebaseio.com",
+    "project_id": "djigitteamsofia",
+    "storage_bucket": "djigitteamsofia.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:426725368110:android:dcd492a82ab64c2b0a9abf",
+        "android_client_info": {
+          "package_name": "com.example.djigitteamsofia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "426725368110-0t6465b0631uje40cgcnan39pnbn9t4j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIrj39LxIIsoXNDu8uGh0vyWWvCgxK7Pc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "426725368110-0t6465b0631uje40cgcnan39pnbn9t4j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
