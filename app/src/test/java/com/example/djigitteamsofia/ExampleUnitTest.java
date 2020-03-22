@@ -14,4 +14,32 @@ public class ExampleUnitTest {
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
     }
+/*    @Test
+    public void emailValidator_CorrectEmailSimple_ReturnsTrue() {
+        assertTrue(email.validate("name@email.com"));
+    }
+    @Test
+    public void emailValidator_CorrectEmailSubDomain_ReturnsTrue() {
+        assertTrue(email.validate("name@abv.bg"));
+    }
+    @Test
+    public void emailValidator_InvalidEmailNoTld_ReturnsFalse() {
+        assertFalse(email.validate("name@email"));
+    }
+    @Test
+    public void emailValidator_InvalidEmailDoubleDot_ReturnsFalse() {
+        assertFalse(email.validate("name@email..com"));
+    }
+    @Test
+    public void emailValidator_InvalidEmailNoUsername_ReturnsFalse() {
+        assertFalse(email.validate("@email.com"));
+    }
+    @Test
+    public void emailValidator_EmptyString_ReturnsFalse() {
+        assertFalse(email.validate(""));
+    }
+    @Test
+    public void emailValidator_NullEmail_ReturnsFalse() {
+        assertFalse(email.validate(null));
+    }*/
 }
