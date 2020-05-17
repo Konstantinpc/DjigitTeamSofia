@@ -70,9 +70,8 @@ public class RegistrationActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
                                 myDataBase.getReference().child("Users").child(firebaseAuth.getUid()).setValue(singUpRecord);
-                                myDataBase.getReference().child("Users").child(firebaseAuth.getUid()).child("Trips").child("Destination").setValue("Sofia");
                                 Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                                startActivity(new Intent(RegistrationActivity.this, SecondActivity.class));
                             } else {
                                 Toast.makeText(RegistrationActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
                             }

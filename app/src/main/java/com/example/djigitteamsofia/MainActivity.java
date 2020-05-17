@@ -3,6 +3,8 @@ package com.example.djigitteamsofia;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,8 +19,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
+
+    public interface FirebaseCallBack{
+        void onCallback(Long i);
+    }
 
     private EditText Email;
     private EditText Password;
@@ -27,7 +41,12 @@ public class MainActivity extends AppCompatActivity {
     private int counter = 5;
     private TextView userRegistration;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference reff;
+    private DatabaseReference rf;
     private ProgressDialog progressDialog;
+    private long i=0;
+
+    private static final String TAG = "MyActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         userRegistration = (TextView)findViewById(R.id.tvRegister);
 
         Info.setText("Number of attempts remaining: 5");
+        final Loading loading =new Loading(MainActivity.this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
@@ -48,8 +68,47 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
         if(user != null) {
-            finish();
-            startActivity(new Intent(MainActivity.this, SecondActivity.class));
+            //finish();
+            //loading.startLoadingDialog();
+            loading.startLoadingDialog();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    loading.dismissDialog();
+                }
+            }, 5000);
+            reff = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid()).child("over");
+            reff.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue(Long.class) > 0) {
+                        //Log.i(TAG, "Value = " + dataSnapshot.child(String.valueOf(i)).child("is_over").getValue() +" pishka");
+                        //Log.i(TAG, "Value = " + dataSnapshot.child(String.valueOf(i)).child("is_over").getValue() +" pishka"+id_t);
+                        i=dataSnapshot.getValue(Long.class);
+
+                        Intent intent = new Intent(MainActivity.this, SecondActivityEnd.class);
+                        intent.putExtra("m_is_over", i);
+                        startActivity(intent);
+                        //.dismissDialog();
+
+
+                    } else {
+
+
+                        //loading.dismissDialog();
+
+                        startActivity(new Intent(MainActivity.this, SecondActivity.class));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
         }
 
         Login.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +136,17 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if(task.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, SecondActivity.class));
+                    if(getIntent().hasExtra("is_over")){
+                        Bundle exBundle= getIntent().getExtras();
+                        long is_over= exBundle.getLong("is_over");
+                        Intent intent = new Intent(MainActivity.this, SecondActivityEnd.class);
+                        intent.putExtra("m_is_over",is_over);
+                        startActivity(intent);
+
+                    }else {
+                        startActivity(new Intent(MainActivity.this, SecondActivity.class));
+                    }
+
                 } else {
                     Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                     counter--;

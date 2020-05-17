@@ -24,6 +24,7 @@ public class SignUpData {
     public void setUserEmail(String userEmail) {
         UserEmail = userEmail;
     }
+
     public String getUserPassword() {
         return UserPassword;
     }
