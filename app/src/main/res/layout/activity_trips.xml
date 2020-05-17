@@ -6,15 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Trips"
-        android:textSize="50sp"
-        android:textStyle="bold" />
+        android:orientation="vertical">
+            <ListView
+                android:id="@+id/listViewTrips"
+                android:layout_width="match_parent"
+                android:layout_height="550dp"
+                android:layout_alignParentTop="true"></ListView>>
 
+    </LinearLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         app:labelVisibilityMode="labeled"
         android:id="@+id/bottom_navigation"
@@ -25,5 +27,7 @@
         app:itemIconTint="@drawable/selector"
         app:itemTextColor="@drawable/selector"
         app:menu="@menu/menu_navigation" />
+
+
 
 </RelativeLayout>
