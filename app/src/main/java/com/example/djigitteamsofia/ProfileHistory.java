@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,18 +27,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Iterator;
 
-public class History extends AppCompatActivity {
+public class ProfileHistory extends AppCompatActivity {
 
-    private TextView total_time, total_max_speed, total_average_speed, total_distance, total_burned_calories;
-    private DatabaseReference reff;
+    private TextView total_time, total_max_speed, total_average_speed, total_distance, total_burned_calories, name;
+    private DatabaseReference reff, reff1;
     private FirebaseAuth firebaseAuth;
     private final String TAG="Na maika ti putkata = ";
     private String idValue=new String();
+    private String profileValue=new String();
+    private ToggleButton follow;
+    private String userName;
+    private long id_followers=0;
+    private boolean y=false;
+    private long followers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        setContentView(R.layout.activity_profile_history);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         total_time=(TextView) findViewById(R.id.textView31);
@@ -45,6 +52,10 @@ public class History extends AppCompatActivity {
         total_average_speed=(TextView) findViewById(R.id.textView33);
         total_distance=(TextView) findViewById(R.id.textView34);
         total_burned_calories=(TextView) findViewById(R.id.textView36);
+        name=(TextView) findViewById(R.id.textView18);
+        follow=(ToggleButton) findViewById(R.id.followbutton);
+
+
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -55,7 +66,11 @@ public class History extends AppCompatActivity {
         }else {
             idValue=firebaseAuth.getUid();
         }
+        if(getIntent().hasExtra("profile")){
+            Bundle exBundle = getIntent().getExtras();
+            profileValue = exBundle.getString("profile");
 
+        }
 
         reff=FirebaseDatabase.getInstance().getReference().child("Users").child(idValue);
         reff.addValueEventListener(new ValueEventListener() {
@@ -67,7 +82,7 @@ public class History extends AppCompatActivity {
                 int bc=0;
                 long stime=0, dtime=0;
                 long diff=0;
-
+                followers=dataSnapshot.child("Followers").getValue(Long.class);
                 Date s_date = new Date();
                 Date d_date = new Date();
                 Iterable<DataSnapshot> snapshotIterator = dataSnapshot.child("Trips").getChildren();
@@ -117,6 +132,8 @@ public class History extends AppCompatActivity {
                     String t_d=Double.valueOf(td).toString();
                     String total_time_cycling= total_days+"d:"+total_hours+"h:"+total_minutes+"m:"+total_seconds+"s";
 
+                    userName=dataSnapshot.child("userName").getValue().toString();
+                    name.setText(userName);
                     reff.child("History").child("maxSpeed").setValue(mc);
                     total_max_speed.setText(m_c+" km/h");
                     reff.child("History").child("totalDistance").setValue(td);
@@ -128,6 +145,8 @@ public class History extends AppCompatActivity {
                     reff.child("History").child("totalTime").setValue(total_time_cycling);
                     total_time.setText(total_time_cycling);
                 }else{
+                    userName=dataSnapshot.child("userName").getValue().toString();
+                    name.setText(userName);
                     reff.child("History").child("maxSpeed").setValue("0");
                     reff.child("History").child("totalDistance").setValue("0");
                     reff.child("History").child("burnedCalories").setValue("0");
@@ -139,6 +158,42 @@ public class History extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        reff1=FirebaseDatabase.getInstance().getReference().child("Users").child(profileValue);
+
+        reff1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("Following").exists()){
+                    id_followers = (dataSnapshot.child("Following").getChildrenCount());
+                    //if(dataSnapshot.child("Following").getValue().toString().equals(userName)) follow.setChecked(true);
+                }
+               if(dataSnapshot.child("Following").child(userName).exists()){
+                   follow.setChecked(true);
+               }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(follow.isChecked()){
+                    reff1.child("Following").child(userName).setValue(idValue);
+                    reff.child("Followers").setValue(followers+1);
+                }else{
+                    reff1.child("Following").child(userName).removeValue();
+                    reff.child("Followers").setValue(followers-1);
+                    follow.setChecked(false);
+                }
             }
         });
 

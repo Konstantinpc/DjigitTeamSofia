@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     loading.dismissDialog();
                 }
-            }, 5000);
+            }, 50000);
             reff = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid()).child("over");
             reff.addValueEventListener(new ValueEventListener() {
                 @Override

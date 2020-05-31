@@ -6,27 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-            <ListView
-                android:id="@+id/listViewTrips"
-                android:layout_width="match_parent"
-                android:layout_height="550dp"
-                android:layout_alignParentTop="true"></ListView>>
+        android:layout_height="match_parent"
 
-    </LinearLayout>
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        app:labelVisibilityMode="labeled"
-        android:id="@+id/bottom_navigation"
+    >
+
+        <TextView
+            android:id="@+id/tvTrips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="76dp"
+            android:text="Trips"
+            android:textAllCaps="true"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ListView
+        android:id="@+id/listViewTrips"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemBackground="@color/colorPrimary"
-        app:itemIconTint="@drawable/selector"
-        app:itemTextColor="@drawable/selector"
-        app:menu="@menu/menu_navigation" />
+        android:layout_height="550dp"
+        android:layout_alignParentBottom="true"></ListView>>
+
+
+
 
 
 

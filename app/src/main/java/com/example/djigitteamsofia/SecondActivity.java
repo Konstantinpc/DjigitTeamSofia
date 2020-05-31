@@ -1,6 +1,7 @@
 package com.example.djigitteamsofia;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,14 +9,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,18 +28,30 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Locale;
 
 public class SecondActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
-    private Button logout, new_trip;
+    private Button logout, new_trip, start_trip;
     private EditText tripStart, tripDestination;
+    private ListView newsfeed;
     private long id_trip = 0;
     private DatabaseReference reff, rf;
     private Trip trip;
+    ArrayList<String> arrayList = new ArrayList<>();
+    ArrayAdapter<String> arrayAdapter;
+    ArrayList<String> following = new ArrayList<>();
+    Hashtable<String, String> id_following = new Hashtable<>();
+    Hashtable<String, String> id_t = new Hashtable<>();
+    Hashtable<String, String> id_text = new Hashtable<>();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,78 +59,107 @@ public class SecondActivity extends AppCompatActivity {
         setContentView(R.layout.activity_second);
 
 
+
+        start_trip=(Button) findViewById(R.id.stbutton);
+        start_trip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SecondActivity.this, S1.class));
+            }
+        });
+
         firebaseAuth = FirebaseAuth.getInstance();
 
-        tripStart=(EditText) findViewById(R.id.startPlain);
-        tripDestination=(EditText) findViewById(R.id.destinationPlain);
-        trip=new Trip();
-
-
-        reff = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid()).child("Trips");
-        rf = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid());
-        reff.addValueEventListener(new ValueEventListener() {
+        newsfeed=(ListView) findViewById(R.id.newsfeed);
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        newsfeed.setAdapter(arrayAdapter);
+        reff = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid()).child("Following");
+        reff.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    id_trip = (dataSnapshot.getChildrenCount());
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.exists()) {
+                    String name = dataSnapshot.getKey();
+                    String id = dataSnapshot.getValue().toString();
+                    rf = FirebaseDatabase.getInstance().getReference().child("Users").child(id).child("SharedTrips");
+                    rf.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            if (dataSnapshot.exists()) {
+                                //id_following.put()
+                                String wow=dataSnapshot.child("Name_of_following").getValue().toString()+"\n\n"+
+                                        dataSnapshot.child("TripName").getValue().toString()+
+                                        "\n\nDate: "+dataSnapshot.child("shared_date").getValue().toString()+"\n";
+                                id_following.put(wow, dataSnapshot.getRef().getParent().getParent().getKey());
+                                id_t.put(wow, dataSnapshot.child("TripId").getValue().toString());
+                                id_text.put(wow, dataSnapshot.child("Text").getValue().toString());
+                                arrayAdapter.add(wow);
+                                arrayAdapter.notifyDataSetChanged();
+                            }
+                        }
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    //following.add(title_t);
+                    //id_following.put(dataSnapshot.getKey(), dataSnapshot.getValue().toString());
+                    //arrayAdapter.add(dataSnapshot.getValue().toString());
+                    //arrayAdapter.notifyDataSetChanged();
                 }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
         });
 
 
-
-        new_trip = (Button)findViewById(R.id.btnNewTrip);
-        new_trip.setOnClickListener(new View.OnClickListener() {
+        newsfeed.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-
-                //String idt = Long.toString(id_trip);
-                final Loading loading =new Loading(SecondActivity.this);
-                trip.setStart(tripStart.getText().toString());
-                trip.setDestination(tripDestination.getText().toString());
-                trip.setId(id_trip+1);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
-                String currentDateandTime = sdf.format(new Date());
-                trip.setStart_date(currentDateandTime);
-                trip.setStartDate(new Date());
-
-                if (trip.getStart().isEmpty() || trip.getDestination().isEmpty()) {
-                    //Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    reff.child(String.valueOf(id_trip+1)).setValue(trip);
-                    rf.child("over").setValue(id_trip+1);
-                    loading.startLoadingDialog();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            loading.dismissDialog();
-                        }
-                    }, 5000);
-                    Toast.makeText(SecondActivity.this, "Trip Successful", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(SecondActivity.this, SecondActivityEnd.class);
-                    intent.putExtra("s_is_over",id_trip+1);
-                    startActivity(intent);
-
-                }
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(SecondActivity.this, id_following.get(arrayAdapter.getItem(position)) , Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(SecondActivity.this, NewsfeedDetails.class);
+                intent.putExtra("id", id_following.get(arrayAdapter.getItem(position)));
+                intent.putExtra("id_trip", id_t.get(arrayAdapter.getItem(position)));
+                intent.putExtra("text", id_text.get(arrayAdapter.getItem(position)));
+                intent.putExtra("details", arrayAdapter.getItem(position));
+                startActivity(intent);
             }
         });
-        logout = (Button)findViewById(R.id.btnLogout);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebaseAuth.signOut();
-                finish();
-                startActivity(new Intent(SecondActivity.this, MainActivity.class));
-            }
-        });
+
+
 
         //Initialize And Assign Variable
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -126,18 +172,14 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()){
+                    case R.id.search:
+                        startActivity(new Intent(getApplicationContext(), Search.class));
+                        overridePendingTransition(0,0);
+                        return true;
                     case R.id.home:
                         return true;
-                    case R.id.leaderboard:
-                        startActivity(new Intent(getApplicationContext(), LeaderBoard.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.trips:
-                        startActivity(new Intent(getApplicationContext(), Trips.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.history:
-                        startActivity(new Intent(getApplicationContext(), History.class));
+                    case R.id.profile:
+                        startActivity(new Intent(getApplicationContext(), Profile.class));
                         overridePendingTransition(0,0);
                         return true;
                 }

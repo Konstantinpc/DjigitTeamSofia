@@ -1,63 +1,65 @@
 package com.example.djigitteamsofia;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.djigitteamsofia.R;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
-public class History extends AppCompatActivity {
 
-    private TextView total_time, total_max_speed, total_average_speed, total_distance, total_burned_calories;
+public class Frag1 extends Fragment {
+
     private DatabaseReference reff;
     private FirebaseAuth firebaseAuth;
-    private final String TAG="Na maika ti putkata = ";
-    private String idValue=new String();
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.frag1_layout, container, false);
+        GraphView graph = (GraphView) view.findViewById(R.id.graph);
 
-        total_time=(TextView) findViewById(R.id.textView31);
-        total_max_speed=(TextView) findViewById(R.id.textView32);
-        total_average_speed=(TextView) findViewById(R.id.textView33);
-        total_distance=(TextView) findViewById(R.id.textView34);
-        total_burned_calories=(TextView) findViewById(R.id.textView36);
+        DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-
-        if(getIntent().hasExtra("id")){
-            Bundle exBundle = getIntent().getExtras();
-            idValue = exBundle.getString("id");
-
-        }else {
-            idValue=firebaseAuth.getUid();
+        String[] days = new String[7];
+        for (int i = 0; i < 7; i++)
+        {
+            days[i] = format.format(calendar.getTime());
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-
-        reff=FirebaseDatabase.getInstance().getReference().child("Users").child(idValue);
+        firebaseAuth = FirebaseAuth.getInstance();
+        reff= FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid());
         reff.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -68,6 +70,8 @@ public class History extends AppCompatActivity {
                 long stime=0, dtime=0;
                 long diff=0;
 
+
+
                 Date s_date = new Date();
                 Date d_date = new Date();
                 Iterable<DataSnapshot> snapshotIterator = dataSnapshot.child("Trips").getChildren();
@@ -77,6 +81,8 @@ public class History extends AppCompatActivity {
 
                     while (iterator.hasNext()) {
                         DataSnapshot next = (DataSnapshot) iterator.next();
+
+                        if(next.child("start_date").child("da"))
                         if(mc<next.child("maxSpeed").getValue(Double.class)){
                             mc=next.child("maxSpeed").getValue(Double.class);
                         }
@@ -142,6 +148,19 @@ public class History extends AppCompatActivity {
             }
         });
 
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 0),
+                new DataPoint(5, 23),
+                new DataPoint(6, 8)
+        });
+        graph.addSeries(series);
+
+
+
+        return view;
     }
 }
-

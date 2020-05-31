@@ -33,6 +33,8 @@ public class Trips extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trips);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         firebaseAuth = FirebaseAuth.getInstance();
         reff = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid()).child("Trips");
 
@@ -77,36 +79,6 @@ public class Trips extends AppCompatActivity {
                 startActivity(intent);
 
 
-            }
-        });
-
-        //Initialize And Assign Variable
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        //Set Hoe Selected
-        bottomNavigationView.setSelectedItemId(R.id.trips);
-
-        //Perform ItemSelectedListener
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.home:
-                        startActivity(new Intent(getApplicationContext(), SecondActivity.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.leaderboard:
-                        startActivity(new Intent(getApplicationContext(), LeaderBoard.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.trips:
-                        return true;
-                    case R.id.history:
-                        startActivity(new Intent(getApplicationContext(), History.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                }
-                return false;
             }
         });
 

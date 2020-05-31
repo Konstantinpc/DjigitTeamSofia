@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.method.SingleLineTransformationMethod;
 import android.view.View;
 import android.widget.Button;
@@ -39,22 +40,10 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
         setupUIViews();
 
+        final Loading loading =new Loading(RegistrationActivity.this);
+
         firebaseAuth = FirebaseAuth.getInstance();
         myDataBase = FirebaseDatabase.getInstance();
-        //reff = myDataBase.getReference();
-        /*reff.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    maxid = (dataSnapshot.getChildrenCount());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
 
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +58,17 @@ public class RegistrationActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
+                                loading.startLoadingDialog();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loading.dismissDialog();
+                                    }
+                                }, 50000);
                                 myDataBase.getReference().child("Users").child(firebaseAuth.getUid()).setValue(singUpRecord);
+                                myDataBase.getReference().child("Users").child(firebaseAuth.getUid()).child("Followers").setValue(0);
+
                                 Toast.makeText(RegistrationActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(RegistrationActivity.this, SecondActivity.class));
                             } else {

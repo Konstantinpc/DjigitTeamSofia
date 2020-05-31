@@ -20,13 +20,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".History" />
+        <activity android:name=".Frag3"></activity>
+        <activity android:name=".Frag2" />
+        <activity android:name=".Frag1" />
+        <activity
+            android:name=".Statistics"
+            android:label="@string/title_activity_statistics"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".NewsfeedDetails"
+            android:parentActivityName=".SecondActivity" />
+        <activity
+            android:name=".Share"
+            android:parentActivityName=".SecondActivity" />
+        <activity
+            android:name=".ProfileHistory"
+            android:parentActivityName=".Search" />
+        <activity
+            android:name=".S1"
+            android:parentActivityName=".SecondActivity" />
+        <activity android:name=".Search" />
+        <activity android:name=".Profile" />
+        <activity
+            android:name=".History"
+            android:parentActivityName=".Profile" />
         <activity android:name=".SecondActivityEnd" />
-        <activity android:name=".StatisticTrips"
+        <activity
+            android:name=".StatisticTrips"
             android:parentActivityName=".Trips" />
         <activity android:name=".SecondActivity" />
         <activity android:name=".RegistrationActivity" />
-        <activity android:name=".LeaderBoard" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +57,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Trips" />
+        <activity
+            android:name=".Trips"
+            android:parentActivityName=".Profile" />
     </application>
 
 </manifest>

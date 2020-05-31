@@ -3,7 +3,10 @@ package com.example.djigitteamsofia;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,8 +21,10 @@ public class StatisticTrips extends AppCompatActivity {
     private TextView title, start_res, start_date_res, destination_res,
             destination_date_res, max_speed_res, av_speed_res, total_distance_res,
             burned_cal_res;
+    private ImageButton share;
     private DatabaseReference reff;
     private FirebaseAuth firebaseAuth;
+    private int intValue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,14 +40,17 @@ public class StatisticTrips extends AppCompatActivity {
         av_speed_res=(TextView) findViewById(R.id.textView12);
         total_distance_res=(TextView) findViewById(R.id.textView15);
         burned_cal_res=(TextView) findViewById(R.id.textView17);
+        share=(ImageButton) findViewById(R.id.sharebtn);
+        Bundle exBundle= getIntent().getExtras();
+        intValue= exBundle.getInt("intValue");
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         reff = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid()).child("Trips");
         reff.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Bundle exBundle= getIntent().getExtras();
-                int intValue= exBundle.getInt("intValue");
+
                 String title_t = dataSnapshot.child(String.valueOf(intValue+1)).child("id").getValue().toString();
                 title.setText(title_t+".");
                 String start = dataSnapshot.child(String.valueOf(intValue+1)).child("start").getValue().toString();
@@ -72,6 +80,15 @@ public class StatisticTrips extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StatisticTrips.this, Share.class);
+                intent.putExtra("index", intValue);
+                startActivity(intent);
             }
         });
     }

@@ -99,7 +99,7 @@ public class Trip {
 
     public void setDestination_date(String destination_date) { this.destination_date = destination_date; }
 
-    public String toString(){ return this.Start+" - "+this.Destination; }
+    public String toString(){ return this.id+". "+this.Start+" - "+this.Destination; }
 
     public Date getStartDate() {
         return StartDate;

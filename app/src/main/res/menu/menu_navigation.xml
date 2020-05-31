@@ -2,24 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/search"
+        android:title="Search"
+        android:icon="@drawable/ic_search"/>
+
+    <item
         android:id="@+id/home"
         android:title="Home"
         android:icon="@drawable/ic_home"/>
 
     <item
-        android:id="@+id/leaderboard"
-        android:title="Leaderboard"
-        android:icon="@drawable/ic_people"/>
-
-
-    <item
-        android:id="@+id/trips"
-        android:title="Trips"
-        android:icon="@drawable/ic_motorcycle"/>
-
-    <item
-        android:id="@+id/history"
-        android:title="History"
+        android:id="@+id/profile"
+        android:title="Profile"
         android:icon="@drawable/ic_storage"/>
 
 </menu>
