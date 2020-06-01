@@ -149,7 +149,7 @@ public class SecondActivity extends AppCompatActivity {
         newsfeed.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(SecondActivity.this, id_following.get(arrayAdapter.getItem(position)) , Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SecondActivity.this, id_following.get(arrayAdapter.getItem(position)) , Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(SecondActivity.this, NewsfeedDetails.class);
                 intent.putExtra("id", id_following.get(arrayAdapter.getItem(position)));
                 intent.putExtra("id_trip", id_t.get(arrayAdapter.getItem(position)));

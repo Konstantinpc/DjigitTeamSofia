@@ -96,7 +96,7 @@ public class Search extends AppCompatActivity {
                 }, 50000);
                 ide.removeAll(ide);*/
 
-                Toast.makeText(Search.this, j.get(arrayAdapter.getItem(position)) , Toast.LENGTH_SHORT).show();
+                //Toast.makeText(Search.this, j.get(arrayAdapter.getItem(position)) , Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(Search.this, ProfileHistory.class);
                 intent.putExtra("id", j.get(arrayAdapter.getItem(position)));
